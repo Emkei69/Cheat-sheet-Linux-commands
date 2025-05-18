@@ -1,5 +1,5 @@
-# File System navigation
+# Navigation in the File System
 
-- Show the contents of the directory: `ls`
-- Go to the directory: `cd <path>`
-- Show the current directory: `pwd`
+- List directory contents: `ls`
+- Change directory: `cd <path>`
+- Show current directory: `pwd`
