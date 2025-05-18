@@ -1,5 +1,22 @@
-# Package Management (for Ubuntu)
+# Package Management
 
-- Update package lists: `apt update`
-- Install a package: `apt install <package>`
-- Remove a package: `apt remove <package>`
+- Install the package (Debian/Ubuntu): `apt-get install <package>`
+- Remove package (Debian/Ubuntu): `apt-get remove <package>`
+- Update the list of available package updates: 'apt-get update`
+- Upgrade installed packages to the latest versions: `apt-get upgrade`
+- Search for packages by keyword: `apt-cache search <key_word>`
+- Install it .deb package: `dpkg -i <package.deb>`
+- Delete it .deb package: `dpkg -r <package>`
+- Display the list of installed packages: `dpkg -l`
+- Install the app from the snap package: `snap install <package>`
+- Delete the installed snap application: `snap remove <package>`
+- Display the list of installed snap applications: `snap list`
+- Start the system service: `systemctl start <service>`
+- Stop the system service: `systemctl stop <service>`
+- Restart the system service: `systemctl restart <service>`
+- Enable autorun of the system service at boot: `systemctl enable <service>`
+- Disable autorun of the system service at boot: `systemctl disable <service>`
+- Start the service: `service <service> start`
+- Stop the service: `service <service> stop`
+- Restart the service: `service <service> restart`
+- Display the service status: `service <service> status`
