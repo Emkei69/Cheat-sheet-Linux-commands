@@ -39,11 +39,9 @@
 
 ``` systemctl enable --now nftables ```  
 
--------включение маршрутизации---------
+-------включение маршрутизации---------  
 ``` echo net.ipv4.ip_forward=1 >> /etc/net/sysctl.conf ```  
-
 ``` systemctl restart network ```  
-
 ``` sysctl -p ```  
 ``` sysctl net.ipv4.ip_forward ```  
 
