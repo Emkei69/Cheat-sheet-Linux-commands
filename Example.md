@@ -1,6 +1,6 @@
 ==========NetProvider==========  
 
--------имя хоста---------
+-------имя хоста---------  
 ``` hostnamectl hostname NetProvider ```  
 ``` exec bash ```  
 
