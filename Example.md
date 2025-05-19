@@ -49,9 +49,6 @@
 (https://www.altlinux.org/Static_Multicast_Routing#%D0%9D%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0_%D0%BC%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8)  
 
 ==========MainRouter==========  
-admin/admin  
-
-https://www.rdp.ru/doc/ED/ER_UserGuide.pdf  
 
 -------имя хоста---------  
 ``` ecorouter>en ```  
@@ -166,3 +163,77 @@ https://www.rdp.ru/doc/ED/ER_UserGuide.pdf
 ``` MainRouter.au-team.irpo#show port brief  ```  
 ``` MainRouter.au-team.irpo#sh ip route ```  
 ``` MainRouter.au-team.irpo#sh running-config  ```  
+
+==========BranchRouter==========  
+
+-------имя хоста---------  
+``` ecorouter>en ```  
+``` ecorouter#configure terminal ```  
+``` ecorouter(config)#hostname BranchRouter.au-team.irpo ```  
+``` BranchRouter.au-team.irpo(config)#ip domain-name au-team.irpo ```  
+
+-------настройка NTP/DNS---------  
+``` (config)#ip name-server 192.168.1.10 ```  
+``` (config)#ntp timezone utc+3 ```  
+
+-------настройка УЗ net_admin---------3.3 Создание учетных записей пользователей  
+``` (config)#username net_admin ```  
+``` (config-user)#password P@$word  ```  
+``` (config-user)#role admin ```  
+``` (config-user)#exit ```  
+
+-------настройка Service Instance-------4.9 Service Instance  
+``` (config)#port te0 ```  
+``` (config-port)#service-instance te0/netprovider-br ```  
+``` (config-service-instance)#encapsulation untagged  ```  
+``` (config-service-instance)#exit ```  
+``` (config-port)#exit ```  
+
+``` (config)#port te1 ```  
+``` (config-port)#service-instance te1/br-net ```  
+``` (config-service-instance)#encapsulation untagged  ```  
+``` (config-service-instance)#exit ```  
+``` (config-port)#exit ```  
+
+-------настройка адресации интерфейсов-------------  
+``` (config)#interface netprovider-br ```  
+``` (config-if)#ip nat outside ```  
+``` (config-if)#ip address 172.16.5.5/28 ```  
+``` (config-if)#connect port te0 service-instance te0/netprovider-br ```  
+``` (config-if)#exit ```  
+
+``` (config)#interface br-net ```  
+``` (config-if)# ip nat inside ```  
+``` (config-if)#ip address 192.168.3.1/27 ```  
+``` (config-if)# connect port te1 service-instance te1/br-net ```  
+
+-------настройка NAT---------28 Встроенный NAT  
+``` (config)#ip nat pool nat 192.168.3.1-192.168.3.254 ```  
+``` (config)#ip nat source dynamic inside-to-outside pool nat overload interface netprovider-br ```  
+
+-------настройка маршрута по умолчанию---------13.4.4 Маршрут по умолчанию  
+``` (config)#ip route 0.0.0.0/0 172.16.5.1 description default ```  
+
+-------настройка туннеля GRE---------15.1 GRE  
+``` (config)#interface tunnel.1 ```  
+``` (config-if-tunnel)#ip add 192.168.5.2/30 ```  
+``` (config-if-tunnel)#ip tunnel 172.16.5.5 172.16.4.4 mode gre ```  
+``` (config-if-tunnel)#ip ospf authentication ```  
+``` (config-if-tunnel)#ip ospf authentication-key P@$word ```  
+``` (config-if-tunnel)#exit ```  
+
+-------настройка OSPF---------13.4 Настройка OSPF  
+``` (config)#router ospf 1 ```  
+``` (config-router)#network 192.168.5.0/30 area 0 ```  
+``` (config-router)#network 192.168.3.0/27 area 0 ```  
+``` (config-router)#passive-interface default ```  
+``` (config-router)#no passive-interface tunnel.1 ```  
+``` (config-router)#exit ```  
+``` (config)#exit ```  
+
+-------команды проверки---------  
+``` MainRouter.au-team.irpo#write ```  
+``` MainRouter.au-team.irpo#show ip interface brief ```  
+``` MainRouter.au-team.irpo#show port brief ```  
+``` MainRouter.au-team.irpo#sh ip route ```  
+``` MainRouter.au-team.irpo#sh running-config ```  
