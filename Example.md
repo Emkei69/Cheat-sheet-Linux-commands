@@ -237,3 +237,60 @@
 ``` MainRouter.au-team.irpo#show port brief ```  
 ``` MainRouter.au-team.irpo#sh ip route ```  
 ``` MainRouter.au-team.irpo#sh running-config ```  
+
+==========MainServer==========  
+
+-------имя хоста/NTP---------  
+``` hostnamectl hostname MainServer.au-team.irpo ```  
+``` exec bash ```  
+``` timedatectl set-timezone Europe/Moscow ```  
+
+-------настройка интерфейсов-------------  
+``` echo 'TYPE=eth' > /etc/net/ifaces/ens19/options ```  
+``` echo '192.168.1.10/26' > /etc/net/ifaces/ens19/ipv4address ```  
+``` echo 'default via 192.168.1.1' > /etc/net/ifaces/ens19/ipv4route ```  
+``` echo 'nameserver 1.1.1.1' > /etc/net/ifaces/ens19/resolv.conf ```  
+``` systemctl restart network ```  
+
+-------DnsMasq-------------  
+``` https://dnsmasq.org/docs/dnsmasq-man.html ```  
+
+``` apt-get update && apt-get install dnsmasq -y ```  
+``` echo 'OPTIONS=""' > /etc/sysconfig/dnsmasq ```  
+
+``` vim /etc/dnsmasq.conf ```  
+
+``` +++++dnsmasq.conf ```  
+
+``` no-resolv ```  
+``` no-poll ```  
+``` no-hosts ```  
+
+``` server=8.8.8.8 ```  
+``` cache-size=1000 ```  
+``` all-servers ```  
+``` no-negcache ```  
+
+``` address=/mainrouter.au-team.irpo/192.168.1.1 ```  
+``` address=/branchrouter.au-team.irpo/192.168.3.1 ```  
+``` address=/mainserver.au-team.irpo/192.168.1.10 ```  
+``` address=/mainclient.au-team.irpo/192.168.2.10 ```  
+``` address=/branchserver.au-team.irpo/192.168.3.10 ```  
+
+``` host-record=mainrouter.au-team.irpo,192.168.1.1 ```  
+``` host-record=mainserver.au-team.irpo,192.168.1.10 ```  
+``` host-record=mainclient.au-team.irpo,192.168.2.10 ```  
+
+``` cname=moodle.au-team.irpo,mainrouter.au-team.irpo ```  
+``` cname=wiki.au-team.irpo,mainrouter.au-team.irpo ```  
+
+``` +++++++ ```  
+
+``` systemctl enable --now dnsmasq ```  
+``` echo 'nameserver 127.0.0.1' > /etc/net/ifaces/ens19/resolv.conf ```  
+``` service network restart ```  
+
+-------настройка sshuser-------------  
+``` useradd -u 1010 sshuser ```  
+``` passwd sshuser ```  
+``` usermod -aG wheel ```
