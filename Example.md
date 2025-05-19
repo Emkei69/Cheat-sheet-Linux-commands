@@ -294,3 +294,90 @@
 ``` useradd -u 1010 sshuser ```  
 ``` passwd sshuser ```  
 ``` usermod -aG wheel ```
+
+==========BranchServer==========  
+
+-------имя хоста/NTP---------  
+``` hostnamectl hostname BranchServer.au-team.irpo ```  
+``` exec bash ```  
+``` timedatectl set-timezone Europe/Moscow ```  
+
+-------настройка интерфейсов-------------  
+``` echo 'TYPE=eth' > /etc/net/ifaces/ens18/options ```  
+``` echo '192.168.3.10/27' > /etc/net/ifaces/ens18/ipv4address ```  
+``` echo 'default via 192.168.3.1' > /etc/net/ifaces/ens18/ipv4route ```  
+``` echo 'nameserver 192.168.1.10' > /etc/net/ifaces/ens18/resolv.conf ```  
+``` service network restart ```  
+
+-------настройка sshuser-------------  
+``` useradd -u 1010 sshuser ```  
+``` passwd sshuser ```  
+``` usermod -aG wheel sshuser ```  
+``` vim /etc/sudoers ```  
+``` WHEEL_USERS ALL=(ALL:ALL) NOPASSWD: ALL ```  
+
+--------настройка SSH----------------  
+``` https://www.altlinux.org/%D0%94%D0%BE%D1%81%D1%82%D1%83%D0%BF_%D0%BF%D0%BE_SSH#%D0%94%D0%BE%D1%81%D1%82%D1%83%D0%BF_%D0%BF%D0%BE_SSH_%D1%87%D0%B5%D1%80%D0%B5%D0%B7_%D1%81%D0%B5%D1%82%D1%8C ```  
+
+``` echo "Authorized access only" > /etc/openssh/banner ```  
+``` в файле /etc/openssh/sshd_config ```  
+
+``` +++++sshd_config++++++++++ ```  
+
+``` Задать "нестандартный" порт ```  
+``` Port 2224 ```  
+
+``` Разрешите подключения только пользователю sshuser ```  
+``` AllowUsers sshuser ```  
+
+``` Ограничьте ввод попыток до 2 ```  
+``` MaxAuthTries 6 --> 2 ```  
+
+``` Баннер ```  
+``` #Banner none ---> Banner /etc/openssh/banner ```  
+
+``` +++++++ ```  
+``` systemctl restart sshd ```  
+
+==========MainClient==========  
+
+-------имя хоста/NTP---------  
+``` hostnamectl hostname MainClient.au-team.irpo ```  
+``` exec bash ```  
+``` timedatectl set-timezone Europe/Moscow ```  
+
+``` https://networkmanager.dev/docs/api/latest/nm-settings-nmcli.html ```  
+
+``` nmcli connection modify 'Wired connection 1' ipv4.dhcp-client-id 01:11:11:11:11:11:11 ```  
+
+``` nmcli connection show ```  
+
+-------настройка ВНЕШНЕГО интерфейса---------  
+``` mv /etc/net/ifaces/ens18/ /etc/net/ifaces/ens19/ ```  
+
+-------настройка ВНУТРЕННИХ интерфейсов---------  
+``` mkdir -p /etc/net/ifaces/ens2{0,1} ```  
+``` echo 'TYPE=eth' | tee /etc/net/ifaces/ens2{0,1}/options ```  
+``` echo '172.16.4.1/28' > /etc/net/ifaces/ens20/ipv4address ```  
+``` echo '172.16.5.1/28' > /etc/net/ifaces/ens21/ipv4address ```  
+``` systemctl restart network ```  
+
+-------настройка NAT---------  
+``` apt-get update && apt-get install nftables -y ```  
+``` vim /etc/nftables/nftables.nft ```  
+
+``` #!/usr/sbin/nft -f ```  
+``` flush ruleset ```  
+
+``` table ip nat { ```  
+```   chain postrouting { ```  
+```     type nat hook postrouting priority srcnat; ```  
+```     oifname "ens19" masquerade ```  
+```   } ```  
+``` } ```  
+
+``` systemctl enable --now nftables ```  
+
+-------включение маршрутизации---------  
+``` echo net.ipv4.ip_forward=1 >> /etc/sysctl.conf ```  
+``` sysctl -p ```  
