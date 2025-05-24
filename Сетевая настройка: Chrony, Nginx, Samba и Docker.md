@@ -1,79 +1,79 @@
----------ISP---------
-
----------Настройка сервера времени chrony на машине ISP---------
- 
-Настройка chrony на Alt 
- 
-apt-get update && apt-get install chrony nginx 
- 
-Вносим изменения в /etc/chrony.conf 
-vim /etc/chrony.conf 
-
-~~~
-#########
-server ntp1.vniiftri.ru iburst
-local stratum 5
-allow all
-######
-#Record the rate at which the system... <--- (Чтобы определить нужную строку)
-~~~
-
-Где 
-server ntp1.vniiftri.ru iburst  эталонный сервер времени 
-local stratum 5        локальный стратум 
-allow all           разрешение для всех клиентов 
- 
-Запустим chrony и поставим в автозагрузку 
-systemctl enable –now chronyd 
- 
-на клиентах необходимо будет установить chrony, и прописать в  chrony.conf строку  
-на HQ-SRV, HQ-CLI: 
-server 172.16.4.1 iburst  
- 
-на BR-RTR, BR-SRV: 
-server 172.16.5.1 iburst  
----------ISP---------
-
----------Настройте веб-сервер nginx как обратный прокси-сервер---------
- 
-Настройка обратного прокси Nginx 
-apt-get install nginx 
- 
----------Создаём новый конфигурационный файл proxy:---------
-/etc/nginx/sites-available.d/proxy.conf 
- 
-server { 
-listen 80; 
-server_name moodle.au-team.irpo; 
-location / { 
-proxy_pass http://192.168.1.10:80; 
-proxy_set_header Host $host; 
-proxy_set_header X-Real-IP  $remote_addr; 
-proxy_set_header X-Forwarded-For $remote_addr; 
-} 
-} 
- 
-server { 
-listen 80; 
-server_name wiki.au-team.irpo; 
-location / { 
-proxy_pass http://192.168.3.10:8080; 
-proxy_set_header Host $host; 
-proxy_set_header X-Real-IP  $remote_addr; 
-proxy_set_header X-Forwarded-For $remote_addr; 
-} 
-} 
-
----------Включаем созданную нами (proxy.conf), путём создания  ссылки,---------
-ln /etc/nginx/sites-available.d/proxy.conf /etc/nginx/sites-enabled.d/ 
-proxy.conf 
-ls -la /etc/nginx/sites-enabled 
-
----------Проверьте конфигурацию на наличие ошибок:---------
-
-nginx -t 
-Затем запускаем службу nginx: 
-systemctl enable --now nginx 
+```---------ISP---------```  
+  
+```---------Настройка сервера времени chrony на машине ISP---------```  
+  
+```Настройка chrony на Alt```  
+  
+```apt-get update && apt-get install chrony nginx```  
+  
+```Вносим изменения в /etc/chrony.conf```  
+```vim /etc/chrony.conf```  
+  
+```~~~```  
+```#########```  
+```server ntp1.vniiftri.ru iburst```  
+```local stratum 5```  
+```allow all```  
+```######```  
+```#Record the rate at which the system... <--- (Чтобы определить нужную строку)```  
+```~~~```  
+  
+```Где```  
+```server ntp1.vniiftri.ru iburst  эталонный сервер времени```  
+```local stratum 5        локальный стратум```  
+```allow all           разрешение для всех клиентов```  
+  
+```Запустим chrony и поставим в автозагрузку```  
+```systemctl enable –now chronyd```  
+  
+```на клиентах необходимо будет установить chrony, и прописать в  chrony.conf строку```  
+```на HQ-SRV, HQ-CLI:```  
+```server 172.16.4.1 iburst```  
+  
+```на BR-RTR, BR-SRV:```  
+```server 172.16.5.1 iburst```  
+  
+```---------ISP---------```  
+  
+```---------Настройте веб-сервер nginx как обратный прокси-сервер---------```  
+  
+```Настройка обратного прокси Nginx```  
+```apt-get install nginx```  
+  
+```---------Создаём новый конфигурационный файл proxy:---------```  
+```/etc/nginx/sites-available.d/proxy.conf```  
+  
+```server {```  
+```listen 80;```  
+```server_name moodle.au-team.irpo;```  
+```location / {```  
+```proxy_pass http://192.168.1.10:80;```  
+```proxy_set_header Host $host;```  
+```proxy_set_header X-Real-IP  $remote_addr;```  
+```proxy_set_header X-Forwarded-For $remote_addr;```  
+```}```  
+```}```  
+  
+```server {```  
+```listen 80;```  
+```server_name wiki.au-team.irpo;```  
+```location / {```  
+```proxy_pass http://192.168.3.10:8080;```  
+```proxy_set_header Host $host;```  
+```proxy_set_header X-Real-IP  $remote_addr;```  
+```proxy_set_header X-Forwarded-For $remote_addr;```  
+```}```  
+```}```  
+  
+```---------Включаем созданную нами (proxy.conf), путём создания  ссылки,---------```  
+```ln /etc/nginx/sites-available.d/proxy.conf /etc/nginx/sites-enabled.d/proxy.conf```  
+```ls -la /etc/nginx/sites-enabled```  
+  
+```---------Проверьте конфигурацию на наличие ошибок:---------```  
+  
+```nginx -t```  
+```Затем запускаем службу nginx:```  
+```systemctl enable --now nginx```
 
 ---------BR-SRV ---------
 
