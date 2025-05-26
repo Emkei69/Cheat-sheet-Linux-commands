@@ -503,23 +503,23 @@ lastName,,"``````samba−tooluseradd"username" P@ssw0rd1```
 
 ```docker-compose -f wiki.yml up -d```
 
-```---------HQ-SRV---------```  
+---------HQ-SRV---------  
 
-```---------Запустите сервис moodle на сервере HQ-SRV---------```  
+---------Запустите сервис moodle на сервере HQ-SRV---------  
 ```Устанавливаем для ряд пакетов, которые будут нам нужны для работы:```  
 
 ```apt-get update && apt-get install apache2 php8.2 apache2-mod_php8.2 mariadb-server php8.2-opcache php8.2-curl php8.2-gd php8.2-intl php8.2-mysqli php8.2-xml php8.2-xmlrpc php8.2-ldap php8.2-zip php8.2-soap php8.2-mbstring php8.2-json php8.2-xmlreader php8.2-fileinfo php8.2-sodium```  
 
-```---------Включаем службы httpd2 и mysqld---------```  
+---------Включаем службы httpd2 и mysqld---------  
 
 ```systemctl enable –-now httpd2 mysqld```  
 
-```---------Настроим безопасный доступ к нашей будущей базе данных с помощью команды:---------```  
+---------Настроим безопасный доступ к нашей будущей базе данных с помощью команды:---------  
 
 ```mysql_secure_installation```  
 
-```---------меняем пароль на P@ssw0rd, все остальное по умолчанию---------```  
-```---------заходим в СУБД для создания и настройки базы данных:---------```  
+---------меняем пароль на P@ssw0rd, все остальное по умолчанию---------  
+---------заходим в СУБД для создания и настройки базы данных:---------  
 
 ```mariadb -u root -p```  
 
@@ -537,23 +537,23 @@ lastName,,"``````samba−tooluseradd"username" P@ssw0rd1```
 
 ```MariaDB [(none)]>```  
 
-```---------скачаем MOODLE стабильной версии---------```  
+---------скачаем MOODLE стабильной версии---------  
 
 ```curl -L https://tinyurl.com/2z2btyrz > /root/moodle.zip```  
 
-```---------Разархивируем его в /var/www/html/ для дальнейшей настройки:---------```  
+---------Разархивируем его в /var/www/html/ для дальнейшей настройки:---------  
 
 ```unzip /root/moodle.zip -d /var/www/html```  
 ```mv /var/www/html/moodle-4.5.0/* /var/www/html/```  
 ```ls /var/www/html```  
 
-```---------Создадим новый каталог moodledata, там будут храниться данные и изменим владельца на каталогах html и moodledata:---------```  
+---------Создадим новый каталог moodledata, там будут храниться данные и изменим владельца на каталогах html и moodledata:---------  
 
 ```mkdir /var/www/moodledata```  
 ```chown apache2:apache2 /var/www/html```  
 ```chown apache2:apache2 /var/www/moodledata```  
 
-```---------Поменяем значение параметра max_input_vars в файле php.ini:---------```  
+---------Поменяем значение параметра max_input_vars в файле php.ini:---------  
 
 ```vim /etc/php/8.2/apache2-mod_php/php.ini```  
 
@@ -574,16 +574,18 @@ lastName,,"``````samba−tooluseradd"username" P@ssw0rd1```
 
 ```! Раскоментируем строку, новое значение 5000```  
 
-```---------Удаляем стандартную страницу apache---------```  
+---------Удаляем стандартную страницу apache---------  
 
 ```rm -f /var/www/html/index.html```  
 
-```---------Перезапускаем службу httpd2:---------```  
+---------Перезапускаем службу httpd2:---------  
 
 ```systemctl restart httpd2```  
 
-```---------Подключаемся с клиента HQ-CLI и начинаем настройку:---------```  
+---------Подключаемся с клиента HQ-CLI и начинаем настройку:---------  
 
 ```http://192.168.1.10/install.php```  
+
+```Выбираем MariaDB в качестве драйвера базы данных```  
 
 ```Выбираем MariaDB в качестве драйвера базы данных```  
