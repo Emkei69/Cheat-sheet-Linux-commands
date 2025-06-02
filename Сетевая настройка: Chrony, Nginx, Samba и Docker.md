@@ -1,4 +1,4 @@
----------ISP---------  
+![image](https://github.com/user-attachments/assets/825dce2a-bfe7-4918-98c2-15a6c31c102b)---------ISP---------  
   
 ---------Настройка сервера времени chrony на машине ISP---------  
   
@@ -377,9 +377,11 @@ lastName,,"`samba−tooluseradd"username" P@ssw0rd1
 
 ```docker-compose -f wiki.yml config```
 
----------после проверки, запускаем---------
+---после проверки, запускаем---
 
 ```docker-compose -f wiki.yml up -d```
+
+![image](https://github.com/user-attachments/assets/7139c3c2-ba46-4a0c-8240-adf657168f79)
 
 ---------!Переходим на HQ-CLI, в браузер по адресу http://192.168.3.10:8080---------  
 
