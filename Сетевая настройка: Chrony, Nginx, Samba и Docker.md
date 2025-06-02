@@ -157,18 +157,21 @@
 
 ```Создаём файл import.sh```
 
-```~~~```
-```#!/bin/bash```
-```csv_file="/opt/users.csv"```
-```while IFS=";" read -r firstName lastName role phone ou street zip city country password; do```
-if [ " 
-firstName"=="FirstName"];then@@@@@@conti
-nue@@@@@@fi@@@@@@username="
-firstName"=="FirstName"];then``````continue``````fi``````username="{firstName,,}.
-@@@@samba−tooluseradd"
-lastName,,"`samba−tooluseradd"username" P@ssw0rd1
-```done < "$csv_file"```
-```~~~```
+~~~  
+```  
+#!/bin/bash  
+#  
+csv_file="/opt/users.csv"  
+while IFS=";" read -r firstName lastName role phone ou street zip city  
+country password; do  
+if [ "$firstName"=="First Name"]; then  
+	     continue  
+fi  
+username="${firstName,,}.${LastName,,}"  
+	samba−tool user add "$username" P@ssw0rd1  
+done < "$csv_file"  
+```  
+~~~  
 
 ```даем право на исполнение```
 ```chmod +x import.sh```
