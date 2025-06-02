@@ -161,12 +161,12 @@
 ```#!/bin/bash```
 ```csv_file="/opt/users.csv"```
 ```while IFS=";" read -r firstName lastName role phone ou street zip city country password; do```
-```if [ "
+if [ " 
 firstName"=="FirstName"];then@@@@@@conti
 nue@@@@@@fi@@@@@@username="
 firstName"=="FirstName"];then``````continue``````fi``````username="{firstName,,}.
 @@@@samba−tooluseradd"
-lastName,,"``````samba−tooluseradd"username" P@ssw0rd1```
+lastName,,"`samba−tooluseradd"username" P@ssw0rd1
 ```done < "$csv_file"```
 ```~~~```
 
@@ -492,6 +492,7 @@ lastName,,"``````samba−tooluseradd"username" P@ssw0rd1```
 ```Выбираем MariaDB в качестве драйвера базы данных```  
 
 ![Описание](https://github.com/Emkei69/Cheat-sheet-Linux-commands/blob/Rus/Скриншот-1.png)
+
 ```Просматриваем всё ли в статус “OK” или “Проверка” и прожимаем “Продолжить”```  
 
 (Картинка)
