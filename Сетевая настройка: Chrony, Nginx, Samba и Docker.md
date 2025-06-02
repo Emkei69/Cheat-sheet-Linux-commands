@@ -9,14 +9,16 @@
 ---------Вносим изменения в /etc/chrony.conf--------- 
 ```vim /etc/chrony.conf```  
   
-```~~~```  
-```#########```  
-```server ntp1.vniiftri.ru iburst```  
-```local stratum 5```  
-```allow all```  
-```######```  
-```#Record the rate at which the system... <--- (Чтобы определить нужную строку)```  
-```~~~```  
+```  
+~~~  
+######  
+server ntp1.vniiftri.ru iburst  
+local stratum 5  
+allow all    
+######  
+#Record the rate at which the system... <--- (Чтобы определить нужную строку)
+~~~  
+```  
   
 ```Где```  
 ```server ntp1.vniiftri.ru iburst  эталонный сервер времени```  
