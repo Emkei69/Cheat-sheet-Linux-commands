@@ -590,7 +590,7 @@ lastName,,"``````samba−tooluseradd"username" P@ssw0rd1```
 
 ```Выбираем MariaDB в качестве драйвера базы данных```  
 
-![Описание](Скриншот.png)
+![Описание](https://github.com/Emkei69/Cheat-sheet-Linux-commands/blob/Rus/Скриншот-1.png)
 ```Просматриваем всё ли в статус “OK” или “Проверка” и прожимаем “Продолжить”```  
 
 (Картинка)
