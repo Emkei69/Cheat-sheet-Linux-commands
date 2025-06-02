@@ -590,7 +590,7 @@ lastName,,"``````samba−tooluseradd"username" P@ssw0rd1```
 
 ```Выбираем MariaDB в качестве драйвера базы данных```  
 
-![photo_2025-06-02_17-43-44](https://github.com/user-attachments/assets/6df2dc86-5630-46af-bb6f-95d675cde773)
+(Картинка)
 
 ```Просматриваем всё ли в статус “OK” или “Проверка” и прожимаем “Продолжить”```  
 
