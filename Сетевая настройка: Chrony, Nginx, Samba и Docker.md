@@ -495,7 +495,7 @@ lastName,,"`samba−tooluseradd"username" P@ssw0rd1
 
 ```Просматриваем всё ли в статус “OK” или “Проверка” и прожимаем “Продолжить”```  
 
-(Картинка)
+![image](https://github.com/user-attachments/assets/5850728e-53fd-483f-bca1-4a8776d91c8e)
 
 Заполняем обязательные поля для создания основного администратора: 
 
