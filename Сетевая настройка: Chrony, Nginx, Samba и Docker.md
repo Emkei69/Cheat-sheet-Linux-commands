@@ -557,6 +557,7 @@ lastName,,"``````samba−tooluseradd"username" P@ssw0rd1```
 
 ```vim /etc/php/8.2/apache2-mod_php/php.ini```  
 
+~~~  
 ```; How many GET/POST/COOKIE input variables may be accepted```  
 ```; max_input_vars = 1000```  
 
@@ -571,6 +572,7 @@ lastName,,"``````samba−tooluseradd"username" P@ssw0rd1```
 ```; This directive informs PHP of which errors, warnings and notices you would like```  
 ```; it to take action for. The recommended way of setting values for this```  
 ```/max_input_va```  
+~~~  
 
 ```! Раскоментируем строку, новое значение 5000```  
 
@@ -588,7 +590,7 @@ lastName,,"``````samba−tooluseradd"username" P@ssw0rd1```
 
 ```Выбираем MariaDB в качестве драйвера базы данных```  
 
-(Картинка)
+![image](https://github.com/user-attachments/assets/e5cb7fbb-8094-4827-a23d-4bb749759a6a)
 
 ```Просматриваем всё ли в статус “OK” или “Проверка” и прожимаем “Продолжить”```  
 
