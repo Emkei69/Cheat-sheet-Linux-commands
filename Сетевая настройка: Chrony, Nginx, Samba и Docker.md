@@ -347,31 +347,35 @@ lastName,,"`samba−tooluseradd"username" P@ssw0rd1
 ---------Создаем в домашней директории пользователя файл wiki.yml для приложения MediaWiki.---------
 
 ```vim wiki.yml```  
-  
-```services:```  
-``` wiki:```  
-``` image: mediawiki```    
-``` container_name: wiki```  
-``` environment:```  
-``` MEDIAWIKI_DB_HOST: mariadb```  
-``` MEDIAWIKI_DB_USER: wiki```  
-``` MEDIAWIKI_PASSWORD: WikiP@ssw0rd```  
-``` MEDIAWIKI_DB_NAME: mediawiki```  
-``` ports:```  
-``` -8080:80```  
-```# volumes: [ ~/LocalSettings.php:/var/www/html/LocalSettings.php ]```  
-``` db:```  
-``` image: mariadb```  
-``` container_name: mariadb```  
-``` hostname: mariadb```  
-``` environment:```  
-``` MYSQL_DATABASE: mariadb```  
-``` MYSQL_USER: wiki```  
-``` MYSQL_PASSWORD: WikiP@ssw0rd```  
-``` volumes:```  
-``` - ./db:/var/lib/mysql```  
-```volumes:```  
-``` db:```  
+
+~~~  
+```  
+services  
+ wiki:  
+ image: mediawiki  
+ container_name: wiki  
+ environment:  
+ MEDIAWIKI_DB_HOST: mariadb  
+ MEDIAWIKI_DB_USER: wiki  
+ MEDIAWIKI_PASSWORD: WikiP@ssw0rd  
+ MEDIAWIKI_DB_NAME: mediawiki  
+ ports:  
+ -8080:80  
+ # volumes: [ ~/LocalSettings.php:/var/www/html/LocalSettings.php ]  
+ db:  
+ image: mariadb  
+ container_name: mariadb  
+ hostname: mariadb  
+ environment:  
+ MYSQL_DATABASE: mariadb  
+ MYSQL_USER: wiki  
+ MYSQL_PASSWORD: WikiP@ssw0rd  
+ volumes:  
+ - ./db:/var/lib/mysql  
+volumes:  
+ db:  
+```  
+~~~  
 
 ---------Проверяем конфигурацию---------
 
