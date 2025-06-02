@@ -402,7 +402,12 @@ lastName,,"`samba−tooluseradd"username" P@ssw0rd1
 
 ---------и снова запускаем wiki.yml---------
 
-```docker-compose -f wiki.yml up -d```
+```docker-compose -f wiki.yml up -d```  
+```На HQ-CLI, в браузер по адресу http://192.168.3.10:8080```  
+
+![image](https://github.com/user-attachments/assets/c3403324-ee47-411e-b8c5-e0d552a59238)
+
+```Wiki работает```  
 
 ---------HQ-SRV---------  
 
