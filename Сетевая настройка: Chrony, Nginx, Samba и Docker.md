@@ -491,7 +491,7 @@ lastName,,"`samba−tooluseradd"username" P@ssw0rd1
 
 ```Выбираем MariaDB в качестве драйвера базы данных```  
 
-![image](https://github.com/user-attachments/assets/15196dbc-0181-4cc0-afc8-2117c6e2d10c)
+(Картинка)
 
 ```Просматриваем всё ли в статус “OK” или “Проверка” и прожимаем “Продолжить”```  
 
