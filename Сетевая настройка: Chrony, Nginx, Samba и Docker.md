@@ -81,20 +81,20 @@
 
 ```apt-get update && apt-get install task-samba-dc -y```
 
-```удаляем файл /etc/samba/smb.conf ДО НАЧАЛА УСТАНОВКИ!!!```
+```удаляем файл /etc/samba/smb.conf ДО НАЧАЛА УСТАНОВКИ!!!```  
 
-```rm -f /etc/samba/smb.conf```
+```rm -f /etc/samba/smb.conf```  
 
----------Начинаем установку:---------
+---------Начинаем установку:---------  
 
-```samba-tool domain provision -–interactive```
+```samba-tool domain provision -–interactive```  
 
-``` Realm [AU-TeAM.IrPO] :```
-``` Server Role (dc, member, standalone) [dc] :```
-``` DNS backend (SAMBA_intERnal, Bind9_flAtfile, bind9_dlz, none) [SAMBA_intERnaL] :```
-``` DNS forwarder IP address (write 'none' to disable forwarding) [192.168.1.10] :```
-``` Administrator password:```
-``` Retype password:```
+``` Realm [AU-TeAM.IrPO] :```  
+``` Server Role (dc, member, standalone) [dc] :```  
+``` DNS backend (SAMBA_intERnal, Bind9_flAtfile, bind9_dlz, none) [SAMBA_intERnaL] :```  
+``` DNS forwarder IP address (write 'none' to disable forwarding) [192.168.1.10] :```  
+``` Administrator password:```  
+``` Retype password:```  
 
 ```! В качестве пароля указываем P@ssw0rd```
 
@@ -104,12 +104,14 @@
 
 ---------Меняем адрес DNS сервера на свой локальный---------
 
-```vim /etc/net/ifaces/ens19/resolv.conf```
+```vim /etc/net/ifaces/ens19/resolv.conf```  
 
-```~~~```
-```nameserver 127.0.0.1```
-```search au-team.irpo```
-```~~~```
+~~~  
+```  
+```nameserver 127.0.0.1```  
+```search au-team.irpo```  
+```
+~~~  
 
 ---------Перезапускаем сетевую службу---------
 
@@ -117,7 +119,7 @@
 
 ---------Перемещаем сгенерированный конфиг krb5.conf:---------
 
-```mv -f /var/lib/samba/private/krb5.conf /etc/krb5.conf```
+```mv -f /var/lib/samba/private/krb5.conf /etc/krb5.conf```  
 
 ---------Проверяем состояние домена---------
 
@@ -127,35 +129,35 @@
 
 ---------Создаем пользователей, создаем группу---------
 
-```samba-tool user add user1.hq P@ssw0rd```
-```samba-tool user add user2.hq P@ssw0rd```
-```samba-tool user add user3.hq P@ssw0rd```
-```samba-tool user add user4.hq P@ssw0rd```
-```samba-tool user add user5.hq P@ssw0rd```
+```samba-tool user add user1.hq P@ssw0rd```  
+```samba-tool user add user2.hq P@ssw0rd```  
+```samba-tool user add user3.hq P@ssw0rd```  
+```samba-tool user add user4.hq P@ssw0rd```  
+```samba-tool user add user5.hq P@ssw0rd```  
 
 ```Добавляем пользователей в группу```
-```samba-tool group addmembers hq user1.hq,user2.hq,user3.hq,user4.hq,user5.hq```
+```samba-tool group addmembers hq user1.hq,user2.hq,user3.hq,user4.hq,user5.hq```  
 
----------проверим---------
+---------проверим---------  
 
-```samba-tool group listmembers hq```
+```samba-tool group listmembers hq```  
 
----------Смотрим настройки пользователя---------
+---------Смотрим настройки пользователя---------  
 
 ```samba-tool user show user1.hq```
 
----------Разблокируем УЗ---------
+---------Разблокируем УЗ---------  
 
-```samba-tool user setexpiry user1.hq --noexpiry```
+```samba-tool user setexpiry user1.hq --noexpiry```  
 
-```Повторная проверка показывает, что мы разблокировали УЗ```
+```Повторная проверка показывает, что мы разблокировали УЗ```  
 
-```accountExpires: 0```
-```logonCount: 20250111103606.0z```
+```accountExpires: 0```  
+```logonCount: 20250111103606.0z```  
 
-```Выполните импорт пользователей из файла users.csv.```
+```Выполните импорт пользователей из файла users.csv.```  
 
-```Создаём файл import.sh```
+```Создаём файл import.sh```  
 
 ~~~  
 ```  
