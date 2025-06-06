@@ -531,3 +531,144 @@ volumes:
 | Краткое название сайта:                           | XX (номер рабочего места)        |
 | Настройки местоположения:                         | Европа/Москва (согласно региону) |
 | Контакты службы поддержки:                        | any@random.com (любое)           |
+
+CLI  
+ 
+Введём клиентскую машину в домен  
+ 
+Необходимо настроить DNS на контроллер домена  
+
+![image](https://github.com/user-attachments/assets/4f20d78e-b2dd-4124-8564-f66e88731862)
+
+Для удобства, поменяем редактор по умолчанию на vim 
+export EDITOR=/usr/bin/vim 
+ 
+---------Повышение привилегий пользователей группы hq---------
+ 
+---Решение через доменную настройку sudo---  
+---Мы для простоты и скорости будем использовать механизм ролей---  
+---Роли в ALT---  
+---Установим необходимый модуль---  
+```apt-get install libnss-role```  
+
+---создадим локальную группу hq_users---  
+```groupadd hq_users```  
+ 
+---настроим роль, чтобы члены доменной группы hq автоматически становились членами локальной группы hq_users---  
+```vim /etc/role``` 
+
+```  
+~~~  
+Domain Users:users  
+Domain Admins:localadmins  
+
+hq:hq_users  
+~~~  
+```  
+
+---Настроим права выполнения sudo всеми пользователями---  
+```control sudo public```
+ 
+---Настройка control для работы sudo---  
+ 
+---Далее, требуется настроить файл конфигурации sodoers. Используем утилиту visudo, которая проверяет корректность синтаксиса---  
+ 
+```Visudo```  
+
+---Добавляем в файл (удобно в конце) следующий блок---   
+
+```  
+~~~  
+###############  
+
+Cmnd_Alias HQ = /usr/bin/cat, /bin/grep, /usr/bin/id  
+
+%hq_users ALL=(ALL) NOPASSWD: HQ  
+
+###############  
+~~~  
+```  
+
+Где:  
+```  
+Cmnd_Alias HQ = /usr/bin/cat, /bin/grep, /usr/bin/id – алиас HQ, в котором
+описан набор исполняемых файлов  
+%hq_users ALL=(ALL) NOPASSWD: HQ – связывает группу hq_users с алиасом HQ и
+настраивает sudo на беспарольный доступ
+```  
+
+--- Для проверки регистрируемся любым пользователем из доменной группы hq---  
+
+![image](https://github.com/user-attachments/assets/7fac3a25-6bcb-4298-add5-9df66bd9e809)
+
+--- Проверяем членство в локальных и доменных группах утилитой id--- 
+
+![image](https://github.com/user-attachments/assets/f2a07ebb-28ed-4534-9382-a6e308ec4bfa)
+
+---Доменный пользователь входит в локальную группу---
+---Далее, проверяем доступ к утилите sudo---
+
+![image](https://github.com/user-attachments/assets/12ab551d-533d-4c68-9b18-142a2a831477)
+
+---Пользователю можно выполнять sudo id без ввода пароля---
+---И одновременно не разрешено выполнять другие---
+
+![image](https://github.com/user-attachments/assets/ea83943a-f768-48ba-9b61-bdc826849ecd)
+
+---------Устанавливаем NFS сервер---------  
+
+```apt-get install nfs-client```  
+```  
+Reading Package Lists... Done  
+Building Dependency Tree... Done  
+nfs-clients is already the newest version.  
+0 upgraded, 0 newly installed, 0 removed and 629 not upgraded.  
+```  
+ 
+
+---------Проверяем доступность ресурсов---------
+
+```showmount -e 192.168.3.10```  
+```  
+Export list for 192.168.3.10:  
+/srv/public *  
+/raid5/nfs 192.168.2.0/28  
+```  
+
+---Создаем каталог---
+
+```mkdir / mnt/nfs```
+```mount -t nfs 192.168.3.10:/raid5/nfs /mnt/nfs```
+```df /mnt/nfs```
+
+```  
+Filesystem		Size Used Avail Use% Mounted on
+192.168.3.10:/raid5/nfs 2.0G	0  1.9G	  0% /mnt/nfs
+```  
+
+``umount -a``  
+
+```  
+umount: /run/user/1080001104: target is busy.
+umount: /run/user/0: target is busy.
+umount: /tmp: target is busy.
+umount: /sys/fs/cgroup: target is busy.
+umount: /: target is busy.
+umount: /run: target is busy.
+umount: /dev: targt is busy.
+```  
+
+---Добавляем следующую строку в конец файла /etc/fstab---  
+
+---192.168.3.10:/raid5/nfs /mnt/nfs nfs intr,soft,_netdev 0  0---  
+
+```  
+intr/nointr	 отк/вкл операции монтирования по ctrl+C 
+soft 	предотвращает зависание, в случае недоступности ресурса 
+_netdev 	Управление системой инициализации, монтирование после доступа к сети 
+```  
+
+---Установите  приложение  Яндекс  Браузере  для организаций на HQ-CLI---  
+---Установим Яндекс Браузер на HQ-CLI через терминал командами---  
+
+```apt-get install yandex-browser-stable```  
