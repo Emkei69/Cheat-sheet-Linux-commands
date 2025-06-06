@@ -1,12 +1,12 @@
----------ISP---------  
+![image](https://github.com/user-attachments/assets/7c9199ea-b82a-4166-bf22-efd05d9a44b2)---------ISP---------  
   
 ---------Настройка сервера времени chrony на машине ISP---------  
   
----------Настройка chrony на Alt---------
+---Настройка chrony на Alt---  
   
 ```apt-get update && apt-get install chrony nginx```  
   
----------Вносим изменения в /etc/chrony.conf--------- 
+---Вносим изменения в /etc/chrony.conf---  
 ```vim /etc/chrony.conf```  
   
 ```  
@@ -20,7 +20,7 @@ allow all
 ~~~  
 ```  
   
-```Где```  
+---Где---  
 ```server ntp1.vniiftri.ru iburst  эталонный сервер времени```  
 ```local stratum 5        локальный стратум```  
 ```allow all           разрешение для всех клиентов```  
@@ -28,7 +28,7 @@ allow all
 ```Запустим chrony и поставим в автозагрузку```  
 ```systemctl enable –now chronyd```  
   
----------на клиентах необходимо будет установить chrony, и прописать в  chrony.conf строку---------
+---на клиентах необходимо будет установить chrony, и прописать в  chrony.conf строку---  
 ```на HQ-SRV, HQ-CLI:```  
 ```server 172.16.4.1 iburst```  
   
@@ -37,10 +37,11 @@ allow all
     
 ---------Настройте веб-сервер nginx как обратный прокси-сервер---------  
   
-```Настройка обратного прокси Nginx```  
+---Настройка обратного прокси Nginx---  
+
 ```apt-get install nginx```  
   
----------Создаём новый конфигурационный файл proxy---------  
+---Создаём новый конфигурационный файл proxy---  
 ```/etc/nginx/sites-available.d/proxy.conf```  
 
 ```  
@@ -63,79 +64,90 @@ location / {
 proxy_pass http://192.168.3.10:8080;  
 proxy_set_header Host $host;  
 proxy_set_header X-Real-IP  $remote_addr;  
-proxy_set_header X-Forwarded-For $remote_addr;  
-} 
-}
+proxy_set_header X-Forwarded-For $remote_addr;    
+}   
+}  
 ~~~  
 ```  
   
----------Включаем созданную нами (proxy.conf), путём создания  ссылки---------  
+---Включаем созданную нами (proxy.conf), путём создания  ссылки---  
 ```ln /etc/nginx/sites-available.d/proxy.conf /etc/nginx/sites-enabled.d/proxy.conf```  
 ```ls -la /etc/nginx/sites-enabled```  
   
----------Проверьте конфигурацию на наличие ошибок---------  
+---Проверьте конфигурацию на наличие ошибок---  
   
 ```nginx -t```  
-```Затем запускаем службу nginx:```  
-```systemctl enable --now nginx```
 
----------BR-SRV ---------
+---Затем запускаем службу nginx---  
 
----------Настройка доменного контроллера Samba на машине BR-SRV---------
+```systemctl enable --now nginx```  
 
-```SambaAD на Alt```
+---------BR-SRV ---------  
 
-```apt-get update && apt-get install task-samba-dc -y```
+---------Настройка доменного контроллера Samba на машине BR-SRV---------  
 
-```удаляем файл /etc/samba/smb.conf ДО НАЧАЛА УСТАНОВКИ!!!```  
+---SambaAD на Alt---  
+
+---удаляем файл /etc/samba/smb.conf ДО НАЧАЛА УСТАНОВКИ!!!---  
+
+```apt-get update && apt-get install task-samba-dc -y```  
+
+
 
 ```rm -f /etc/samba/smb.conf```  
 
----------Начинаем установку:---------  
+---Начинаем установку---  
 
 ```samba-tool domain provision -–interactive```  
 
-``` Realm [AU-TeAM.IrPO] :```  
-``` Server Role (dc, member, standalone) [dc] :```  
-``` DNS backend (SAMBA_intERnal, Bind9_flAtfile, bind9_dlz, none) [SAMBA_intERnaL] :```  
-``` DNS forwarder IP address (write 'none' to disable forwarding) [192.168.1.10] :```  
-``` Administrator password:```  
-``` Retype password:```  
+```   
+Realm [AU-TeAM.IrPO] :  
+Server Role (dc, member, standalone) [dc] :  
+DNS backend (SAMBA_intERnal, Bind9_flAtfile, bind9_dlz, none) [SAMBA_intERnaL] :  
+DNS forwarder IP address (write 'none' to disable forwarding) [192.168.1.10] :  
+Administrator password:  
+Retype password:  
+```  
 
-```! В качестве пароля указываем P@ssw0rd```
+---! В качестве пароля указываем P@ssw0rd---  
 
----------Запускаем сервис---------
+---Запускаем сервис---  
 
-```systemctl enable --now samba.service```
+```systemctl enable --now samba.service```  
 
----------Меняем адрес DNS сервера на свой локальный---------
+```  
+Synchronizing state of samba.service with SysV service script with /lib/sys  
+Executing: /lib/systemd/systemd-sysv-install enable samba  
+Created symlink /etc/systemd/system/multi-user.target.wants/samba.service -  
+```  
+---------Меняем адрес DNS сервера на свой локальный---------  
 
 ```vim /etc/net/ifaces/ens19/resolv.conf```  
 
-```
+```  
+~~~    
+nameserver 127.0.0.1  
+search au-team.irpo  
 ~~~  
 ```  
-```nameserver 127.0.0.1```  
-```search au-team.irpo```  
-```
-~~~  
-```
 
----------Перезапускаем сетевую службу---------
+---Перезапускаем сетевую службу---  
 
 ```systemctl restart network```
 
----------Перемещаем сгенерированный конфиг krb5.conf:---------
+---Перемещаем сгенерированный конфиг krb5.conf---  
 
 ```mv -f /var/lib/samba/private/krb5.conf /etc/krb5.conf```  
 
----------Проверяем состояние домена---------
+---Проверяем состояние домена---  
 
-```samba-tool domain info 127.0.0.1```
+```samba-tool domain info 127.0.0.1```  
+
+---Домен работает---  
 
 ---------Создадим пользователей---------
 
----------Создаем пользователей, создаем группу---------
+---Создаем пользователей, создаем группу---
 
 ```samba-tool user add user1.hq P@ssw0rd```  
 ```samba-tool user add user2.hq P@ssw0rd```  
@@ -143,27 +155,49 @@ proxy_set_header X-Forwarded-For $remote_addr;
 ```samba-tool user add user4.hq P@ssw0rd```  
 ```samba-tool user add user5.hq P@ssw0rd```  
 
-```Добавляем пользователей в группу```
+---Добавляем пользователей в группу---
 ```samba-tool group addmembers hq user1.hq,user2.hq,user3.hq,user4.hq,user5.hq```  
 
----------проверим---------  
+---проверим---  
 
 ```samba-tool group listmembers hq```  
 
----------Смотрим настройки пользователя---------  
+```  
+user5.hq  
+user4.hq  
+user3.hq  
+uesr2.hq  
+user1.hq
+```  
+
+---Смотрим настройки пользователя---  
 
 ```samba-tool user show user1.hq```
 
----------Разблокируем УЗ---------  
+---Из соображений безопасности все создаваемые УЗ блокированы---  
+
+---Параметр accountExpires---
+
+```  
+accountExpires: 92223372036854775807  
+logonCount: 0  
+```  
+
+---Любое значение отличное от 0 обозначает, что учетная запись пользователя заблокирована---
+
+---Разблокируем УЗ---  
 
 ```samba-tool user setexpiry user1.hq --noexpiry```  
 
-```Повторная проверка показывает, что мы разблокировали УЗ```  
+---Повторная проверка показывает, что мы разблокировали УЗ---  
 
-```accountExpires: 0```  
-```logonCount: 20250111103606.0z```  
+```
+userAccountConrol: 66048  
+accountExpires: 0  
+logonCount: 20250111103606.0z  
+```
 
-```Выполните импорт пользователей из файла users.csv.```  
+---Выполните импорт пользователей из файла users.csv---  
 
 ```Создаём файл import.sh```  
 
@@ -183,60 +217,73 @@ done < "$csv_file"
 ```  
 ~~~  
 
-```даем право на исполнение```
+---даем право на исполнение---  
+
 ```chmod +x import.sh```
 
-```и запускаем```
-```./import.sh```
+---и запускаем---  
 
-```После выполнения скрипта проверяем```
-```samba-tool user list```
+```./import.sh```  
 
----------Сконфигурируйте файловое хранилище---------
+---После выполнения скрипта проверяем---  
 
-```Проверяем наличие дисков```
+```samba-tool user list```  
 
-```lsblk```
+---------Сконфигурируйте файловое хранилище---------  
 
----------Программный RAID в ALT---------
+---Проверяем наличие дисков---  
 
-```Создадим дисковый массив уровня 5 из трёх дополнительных дисков следующей командой:```
-```mdadm --create /dev/md0 --level=5 --raid-devices=3 /dev/sd[b-d]```
+```lsblk```  
 
-```Посмотрим статус raid-массива:```
+```  
+NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT  
+sda    8:0    0  10G  0 disk /  
+sdb    8:16   0   1G  0 disk /  
+sdc    8:32   0   1G  0 disk /  
+sdd    8:48   0   1G  0 disk /  
+```  
 
-```cat /proc/mdstat```
+---Программный RAID в ALT---  
 
-```Сохраним конфигурацию массива в файл /etc/mdadm.conf следующей командой:```
+---Создадим дисковый массив уровня 5 из трёх дополнительных дисков следующей командой---  
 
-```mdadm --detail -scan --verbose > /etc/mdadm.conf```
+```mdadm --create /dev/md0 --level=5 --raid-devices=3 /dev/sd[b-d]```  
 
-```теперь необходимо создать раздел```
-```parted /dev/md0```
+---Посмотрим статус raid-массива---  
 
-```1) Необходимо создать таблицу разделов. Используем самый простой и распространённый тип MBR (msdos).```
+```cat /proc/mdstat```  
+
+---Сохраним конфигурацию массива в файл /etc/mdadm.conf следующей командой---  
+
+```mdadm --detail -scan --verbose > /etc/mdadm.conf```  
+
+---теперь необходимо создать раздел---  
+
+```parted /dev/md0```  
+
+---1) Необходимо создать таблицу разделов. Используем самый простой и распространённый тип MBR (msdos).---
 ```parted /dev/md0```
 ```GNU Parted 3.2.46-e4ae```
 ```Using /dev/md0```
 ```Welcome to GNU Parted! Type 'help' to view a list of command.```
 ```(parted) mktable msdos```
 
-```2) Посмотрим таблицу разделов, чтобы выяснить размер свободного пространства.```
+---2) Посмотрим таблицу разделов, чтобы выяснить размер свободного пространства.---
 ```(parted) print```
 
-```3) Создадим раздел.```
+---3) Создадим раздел.---
 ```(parted) mkpart primary ext4 1 2143MB```
 
-```4) Снова посмотрим таблицу разделов```
+---4) Снова посмотрим таблицу разделов---
 ```(parted) print```
 
-```5) Выходим из parted. Команда quit.```
+---5) Выходим из parted. Команда quit.---
 
 ---------Проверим lsblk---------
 
 ```lsblk /dev/md0```
 
-```Теперь создадим файловую систему, по заданию требуется ext4, создаём её следующей командой:```
+---Теперь создадим файловую систему, по заданию требуется ext4, создаём её следующей командой---
 ```mkfs.ext4 /dev/md0p1```
 
 ---------Настроим автоматическое монтирование в /raid5---------
