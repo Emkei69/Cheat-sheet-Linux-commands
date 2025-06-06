@@ -42,28 +42,32 @@ allow all
   
 ---------Создаём новый конфигурационный файл proxy---------  
 ```/etc/nginx/sites-available.d/proxy.conf```  
+
+```  
+~~~  
+server {   
+listen 80;   
+server_name moodle.au-team.irpo;   
+location / {   
+proxy_pass http://192.168.1.10:80;   
+proxy_set_header Host $host;  
+proxy_set_header X-Real-IP  $remote_addr;  
+proxy_set_header X-Forwarded-For $remote_addr;  
+}  
+}  
   
-```server {```  
-```listen 80;```  
-```server_name moodle.au-team.irpo;```  
-```location / {```  
-```proxy_pass http://192.168.1.10:80;```  
-```proxy_set_header Host $host;```  
-```proxy_set_header X-Real-IP  $remote_addr;```  
-```proxy_set_header X-Forwarded-For $remote_addr;```  
-```}```  
-```}```  
-  
-```server {```  
-```listen 80;```  
-```server_name wiki.au-team.irpo;```  
-```location / {```  
-```proxy_pass http://192.168.3.10:8080;```  
-```proxy_set_header Host $host;```  
-```proxy_set_header X-Real-IP  $remote_addr;```  
-```proxy_set_header X-Forwarded-For $remote_addr;```  
-```}```  
-```}```  
+server {  
+listen 80;  
+server_name wiki.au-team.irpo;    
+location / {  
+proxy_pass http://192.168.3.10:8080;  
+proxy_set_header Host $host;  
+proxy_set_header X-Real-IP  $remote_addr;  
+proxy_set_header X-Forwarded-For $remote_addr;  
+} 
+}
+~~~  
+```  
   
 ---------Включаем созданную нами (proxy.conf), путём создания  ссылки---------  
 ```ln /etc/nginx/sites-available.d/proxy.conf /etc/nginx/sites-enabled.d/proxy.conf```  
@@ -108,12 +112,14 @@ allow all
 
 ```vim /etc/net/ifaces/ens19/resolv.conf```  
 
+```
 ~~~  
 ```  
 ```nameserver 127.0.0.1```  
 ```search au-team.irpo```  
 ```
 ~~~  
+```
 
 ---------Перезапускаем сетевую службу---------
 
