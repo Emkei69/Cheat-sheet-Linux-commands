@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/7c9199ea-b82a-4166-bf22-efd05d9a44b2)---------ISP---------  
+---------ISP---------  
   
 ---------Настройка сервера времени chrony на машине ISP---------  
   
