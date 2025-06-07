@@ -1,6 +1,6 @@
----------ISP---------  
+==========NetProvider==========  
   
----------Настройка сервера времени chrony на машине ISP---------  
+---------Настройка сервера времени chrony на машине NetProvider---------  
   
 ---Настройка chrony на Alt---  
   
@@ -16,7 +16,7 @@ server ntp1.vniiftri.ru iburst
 local stratum 5  
 allow all    
 ######  
-#Record the rate at which the system... <--- (Чтобы определить нужную строку)
+#Record the rate at which the system... <--- (Чтобы определить нужную строку)  
 ~~~  
 ```  
   
@@ -29,10 +29,10 @@ allow all
 ```systemctl enable –now chronyd```  
   
 ---на клиентах необходимо будет установить chrony, и прописать в  chrony.conf строку---  
-```на HQ-SRV, HQ-CLI:```  
+```на MainServer, MainClient:```  
 ```server 172.16.4.1 iburst```  
   
-```на BR-RTR, BR-SRV:```  
+```на BranchRouter, BranchServer:```  
 ```server 172.16.5.1 iburst```  
     
 ---------Настройте веб-сервер nginx как обратный прокси-сервер---------  
@@ -82,9 +82,9 @@ proxy_set_header X-Forwarded-For $remote_addr;
 
 ```systemctl enable --now nginx```  
 
----------BR-SRV ---------  
+---------BranchServer ---------  
 
----------Настройка доменного контроллера Samba на машине BR-SRV---------  
+---------Настройка доменного контроллера Samba на машине BranchServer---------  
 
 ---SambaAD на Alt---  
 
@@ -262,17 +262,28 @@ sdd    8:48   0   1G  0 disk /
 ```parted /dev/md0```  
 
 ---1) Необходимо создать таблицу разделов. Используем самый простой и распространённый тип MBR (msdos)---  
-```parted /dev/md0```
-```GNU Parted 3.2.46-e4ae```
-```Using /dev/md0```
-```Welcome to GNU Parted! Type 'help' to view a list of command.```
-```(parted) mktable msdos```
+```  
+parted /dev/md0  
+GNU Parted 3.2.46-e4ae  
+Using /dev/md0  
+Welcome to GNU Parted! Type 'help' to view a list of command.  
+(parted) mktable msdos
+```
 
 ---2) Посмотрим таблицу разделов, чтобы выяснить размер свободного пространства---  
-```(parted) print```
+```(parted) print```  
+```  
+Model: Linux Software RAID Array (md)  
+Disk /dev/md0: 2143MB  
+Sector size (logical/physical): 512B/512B  
+Partition Table: msdos  
+Disk Flags:
+  
+Number  Start	End	Size	Type	File	system	Flags
+```  
 
 ---3) Создадим раздел.---  
-```(parted) mkpart primary ext4 1 2143MB```
+```(parted) mkpart primary ext4 1 2143MB```  
 
 ---4) Снова посмотрим таблицу разделов---  
 ```(parted) print```
@@ -297,10 +308,10 @@ Number	Start	End	Size	Туре	File system	Flags
 
 ---Настроим автоматическое монтирование в /raid5---  
 
----Создаём каталог /raid5:---  
+---Создаём каталог /raid5---  
 ```mkdir /raid5```  
 
----Обеспечим автоматическое монтирование в папку /raid5. Для этого добавим в конец файла /etc/fstab:---
+---Обеспечим автоматическое монтирование в папку /raid5. Для этого добавим в конец файла /etc/fstab---
 ```/dev/md0p1 /raid5 ext4 defaults 0 0```  
 
 ---Выполним команду монтирования---  
@@ -338,19 +349,19 @@ Number	Start	End	Size	Туре	File system	Flags
   
 ```exportfs -vra```  
   
----------Ansible на сервере BR-SRV---------  
+---------Ansible на сервере BranchServer---------  
   
 ---Предварительные настройки---  
   
----Включаем SSH на HQ-CLI---  
+---Включаем SSH на MainClient---  
   
 ```systemctl enable --now sshd.service```  
   
----Создаем ключевую пару на BR-SRV---  
+---Создаем ключевую пару на BranchServer---  
   
 ```ssh-keygen```
   
----Настраиваем бесключевой доступ на HQ-SRV и HQ-CLI---  
+---Настраиваем бесключевой доступ на MainServer и MainClient---  
   
 ```ssh-copy-id user@192.168.1.10```  
 ```ssh-copy-id user@192.168.2.10```  
@@ -381,36 +392,39 @@ interpreter_python = auto_silent
 ```vim /etc/ansible/hosts```  
   
 ```
-```[Linux]```
-```hq-srv ansible_host=user@192.168.1.10```
-```hq-cli ansible_host=user@192.168.2.10```
+~~~  
+[Linux]  
+mainserver ansible_host=user@192.168.1.10  
+mainclient ansible_host=user@192.168.2.10  
 
-```[ECO_ROUTERS]```
-```hq-rtr ansible_host=192.168.5.1```
-```br-rtr ansible_host=192.168.5.2```
+[ECO_ROUTERS]  
+mainrouter ansible_host=192.168.5.1  
+branchrouter ansible_host=192.168.5.2  
 
-```[ECO_ROUTERS:vars]```
+[ECO_ROUTERS:vars]  
 
-```ansible_connection=network_cli```
-```ansible_network_os=ios```
-```ansible_user-admin```
-```ansible_password-admin```
+ansible_connection=network_cli  
+ansible_network_os=ios  
+ansible_user-admin  
+ansible_password-admin
+~~~  
+```  
 
 ---------Выполняем проверку доступности---------
 
 ```ansible all -m ping```
 
----------Развертывание приложений в Docker на сервере BR-SRV---------
+---------Развертывание приложений в Docker на сервере BranchServer---------
 
 ---------Установить docker-engine и docker-compose---------
 
 ```apt-get install docker-engine docker-compose -y```
 
----------запустим службу docker:---------
+---------запустим службу docker---------
 
 ```systemctl enable --now docker```
 
----------добавляем пользователя sshuser в группу doсker, что он имел возможность работать с контейнерами:---------
+---------добавляем пользователя sshuser в группу doсker, что он имел возможность работать с контейнерами---------
 
 ```usermod sshuser -aG docker```
 ```grep docker /etc/group```
@@ -467,7 +481,7 @@ volumes:
 
 ![image](https://github.com/user-attachments/assets/7139c3c2-ba46-4a0c-8240-adf657168f79)
 
----------!Переходим на HQ-CLI, в браузер по адресу http://192.168.3.10:8080---------  
+---------!Переходим на MainClient, в браузер по адресу http://192.168.3.10:8080---------  
 
 ![image](https://github.com/user-attachments/assets/b98a70d4-3f7d-4fe1-b3fb-0233c1f35e37)  
 
@@ -496,15 +510,15 @@ volumes:
 ---------и снова запускаем wiki.yml---------
 
 ```docker-compose -f wiki.yml up -d```  
-```На HQ-CLI, в браузер по адресу http://192.168.3.10:8080```  
+```На MainClient, в браузер по адресу http://192.168.3.10:8080```  
 
 ![image](https://github.com/user-attachments/assets/c3403324-ee47-411e-b8c5-e0d552a59238)
 
 ```Wiki работает```  
 
----------HQ-SRV---------  
+---------MainServer---------  
 
----------Запустите сервис moodle на сервере HQ-SRV---------  
+---------Запустите сервис moodle на сервере MainServer---------  
 ```Устанавливаем для ряд пакетов, которые будут нам нужны для работы:```  
 
 ```apt-get update && apt-get install apache2 php8.2 apache2-mod_php8.2 mariadb-server php8.2-opcache php8.2-curl php8.2-gd php8.2-intl php8.2-mysqli php8.2-xml php8.2-xmlrpc php8.2-ldap php8.2-zip php8.2-soap php8.2-mbstring php8.2-json php8.2-xmlreader php8.2-fileinfo php8.2-sodium```  
@@ -513,12 +527,12 @@ volumes:
 
 ```systemctl enable –-now httpd2 mysqld```  
 
----------Настроим безопасный доступ к нашей будущей базе данных с помощью команды:---------  
+---------Настроим безопасный доступ к нашей будущей базе данных с помощью команды---------  
 
 ```mysql_secure_installation```  
 
 ---------меняем пароль на P@ssw0rd, все остальное по умолчанию---------  
----------заходим в СУБД для создания и настройки базы данных:---------  
+---------заходим в СУБД для создания и настройки базы данных---------  
 
 ```mariadb -u root -p```  
 
@@ -540,19 +554,19 @@ volumes:
 
 ```curl -L https://tinyurl.com/2z2btyrz > /root/moodle.zip```  
 
----------Разархивируем его в /var/www/html/ для дальнейшей настройки:---------  
+---------Разархивируем его в /var/www/html/ для дальнейшей настройки---------  
 
 ```unzip /root/moodle.zip -d /var/www/html```  
 ```mv /var/www/html/moodle-4.5.0/* /var/www/html/```  
 ```ls /var/www/html```  
 
----------Создадим новый каталог moodledata, там будут храниться данные и изменим владельца на каталогах html и moodledata:---------  
+---------Создадим новый каталог moodledata, там будут храниться данные и изменим владельца на каталогах html и moodledata---------  
 
 ```mkdir /var/www/moodledata```  
 ```chown apache2:apache2 /var/www/html```  
 ```chown apache2:apache2 /var/www/moodledata```  
 
----------Поменяем значение параметра max_input_vars в файле php.ini:---------  
+---------Поменяем значение параметра max_input_vars в файле php.ini---------  
 
 ```vim /etc/php/8.2/apache2-mod_php/php.ini```  
 
@@ -579,11 +593,11 @@ volumes:
 
 ```rm -f /var/www/html/index.html```  
 
----------Перезапускаем службу httpd2:---------  
+---------Перезапускаем службу httpd2---------  
 
 ```systemctl restart httpd2```  
 
----------Подключаемся с клиента HQ-CLI и начинаем настройку:---------  
+---------Подключаемся с клиента MainClient и начинаем настройку---------  
 
 ```http://192.168.1.10/install.php```  
 
@@ -661,100 +675,98 @@ Cmnd_Alias HQ = /usr/bin/cat, /bin/grep, /usr/bin/id
 ###############  
 ~~~  
 ```  
-
-Где:  
+  
+---Где---  
 ```  
-Cmnd_Alias HQ = /usr/bin/cat, /bin/grep, /usr/bin/id – алиас HQ, в котором
+Cmnd_Alias HQ = /usr/bin/cat, /bin/grep, /usr/bin/id – алиас HQ, в котором  
 описан набор исполняемых файлов  
-%hq_users ALL=(ALL) NOPASSWD: HQ – связывает группу hq_users с алиасом HQ и
-настраивает sudo на беспарольный доступ
+%hq_users ALL=(ALL) NOPASSWD: HQ – связывает группу hq_users с алиасом HQ и  
+настраивает sudo на беспарольный доступ  
 ```  
-
+  
 --- Для проверки регистрируемся любым пользователем из доменной группы hq---  
-
+  
 ![image](https://github.com/user-attachments/assets/7fac3a25-6bcb-4298-add5-9df66bd9e809)
-
---- Проверяем членство в локальных и доменных группах утилитой id--- 
-
+  
+--- Проверяем членство в локальных и доменных группах утилитой id---  
+  
 ![image](https://github.com/user-attachments/assets/f2a07ebb-28ed-4534-9382-a6e308ec4bfa)
-
----Доменный пользователь входит в локальную группу---
----Далее, проверяем доступ к утилите sudo---
-
+  
+---Доменный пользователь входит в локальную группу---  
+---Далее, проверяем доступ к утилите sudo---  
+  
 ![image](https://github.com/user-attachments/assets/12ab551d-533d-4c68-9b18-142a2a831477)
-
----Пользователю можно выполнять sudo id без ввода пароля---
----И одновременно не разрешено выполнять другие---
-
+  
+---Пользователю можно выполнять sudo id без ввода пароля---  
+---И одновременно не разрешено выполнять другие---  
+  
 ![image](https://github.com/user-attachments/assets/ea83943a-f768-48ba-9b61-bdc826849ecd)
-
----------Устанавливаем NFS сервер---------  
-
+  
+---Устанавливаем NFS сервер---  
+  
 ```apt-get install nfs-client```  
 ```  
 Reading Package Lists... Done  
 Building Dependency Tree... Done  
-nfs-clients is already the newest version.  
+nfs-clients is already the newest version.    
 0 upgraded, 0 newly installed, 0 removed and 629 not upgraded.  
 ```  
- 
-
----------Проверяем доступность ресурсов---------
-
+  
+---Проверяем доступность ресурсов---  
+  
 ```showmount -e 192.168.3.10```  
 ```  
 Export list for 192.168.3.10:  
 /srv/public *  
 /raid5/nfs 192.168.2.0/28  
 ```  
-
----Создаем каталог---
-
-```mkdir / mnt/nfs```
-```mount -t nfs 192.168.3.10:/raid5/nfs /mnt/nfs```
-```df /mnt/nfs```
+  
+---Создаем каталог---  
+  
+```mkdir / mnt/nfs```  
+```mount -t nfs 192.168.3.10:/raid5/nfs /mnt/nfs```  
+```df /mnt/nfs```  
+  
+```  
+Filesystem		Size Used Avail Use% Mounted on  
+192.168.3.10:/raid5/nfs 2.0G	0  1.9G	  0% /mnt/nfs  
+```  
+  
+```umount -a```  
 
 ```  
-Filesystem		Size Used Avail Use% Mounted on
-192.168.3.10:/raid5/nfs 2.0G	0  1.9G	  0% /mnt/nfs
+umount: /run/user/1080001104: target is busy.  
+umount: /run/user/0: target is busy.  
+umount: /tmp: target is busy.  
+umount: /sys/fs/cgroup: target is busy.  
+umount: /: target is busy.  
+umount: /run: target is busy.  
+umount: /dev: targt is busy.  
 ```  
-
-``umount -a``  
-
-```  
-umount: /run/user/1080001104: target is busy.
-umount: /run/user/0: target is busy.
-umount: /tmp: target is busy.
-umount: /sys/fs/cgroup: target is busy.
-umount: /: target is busy.
-umount: /run: target is busy.
-umount: /dev: targt is busy.
-```  
-
+  
 ---Добавляем следующую строку в конец файла /etc/fstab---  
-
+  
 ---192.168.3.10:/raid5/nfs /mnt/nfs nfs intr,soft,_netdev 0  0---  
-
+  
 ```  
-intr/nointr	 отк/вкл операции монтирования по ctrl+C 
-soft 	предотвращает зависание, в случае недоступности ресурса 
-_netdev 	Управление системой инициализации, монтирование после доступа к сети 
+intr/nointr — отк/вкл операции монтирования по ctrl+C  
+soft — предотвращает зависание, в случае недоступности ресурса  
+_netdev — Управление системой инициализации, монтирование после доступа к сети  
 ```  
-
----Установите  приложение  Яндекс  Браузере  для организаций на HQ-CLI---  
----Установим Яндекс Браузер на HQ-CLI через терминал командами---  
-
-```apt-get install yandex-browser-stable```  
-
--------проброс портов---------28.1  NAT port forwarding 
-
-==========HQ-RTR==========  
-
-
-```(config)#ip nat source static tcp 192.168.1.10 2024 172.16.4.4 2024```
-
-==========BR-RTR==========
-
-```(config)#ip nat source static tcp 192.168.3.10 8080 172.16.5.5 80```
-```(config)#ip nat source static tcp 192.168.3.10 2024 172.16.5.5 2024```
-
+  
+---------Установите  приложение  Яндекс  Браузере  для организаций на MainClient---------  
+---Установим Яндекс Браузер на MainClient через терминал командами---  
+  
+```apt-get install yandex-browser-stable```    
+  
+-------проброс портов---------  
+---NAT port forwarding---
+  
+==========MainRouter==========  
+  
+```(config)#ip nat source static tcp 192.168.1.10 2024 172.16.4.4 2024```  
+  
+==========BranchRouter==========  
+  
+```(config)#ip nat source static tcp 192.168.3.10 8080 172.16.5.5 80```  
+```(config)#ip nat source static tcp 192.168.3.10 2024 172.16.5.5 2024```  
