@@ -261,106 +261,126 @@ sdd    8:48   0   1G  0 disk /
 
 ```parted /dev/md0```  
 
----1) Необходимо создать таблицу разделов. Используем самый простой и распространённый тип MBR (msdos).---
+---1) Необходимо создать таблицу разделов. Используем самый простой и распространённый тип MBR (msdos)---  
 ```parted /dev/md0```
 ```GNU Parted 3.2.46-e4ae```
 ```Using /dev/md0```
 ```Welcome to GNU Parted! Type 'help' to view a list of command.```
 ```(parted) mktable msdos```
 
----2) Посмотрим таблицу разделов, чтобы выяснить размер свободного пространства.---
+---2) Посмотрим таблицу разделов, чтобы выяснить размер свободного пространства---  
 ```(parted) print```
 
----3) Создадим раздел.---
+---3) Создадим раздел.---  
 ```(parted) mkpart primary ext4 1 2143MB```
 
----4) Снова посмотрим таблицу разделов---
+---4) Снова посмотрим таблицу разделов---  
 ```(parted) print```
+```  
+Model: Linux Software RAID Array (md)  
+Disk /dev/md0: 2143MB  
+Sector size (logical/physical): 512B/512B  
+Partition Table: msdos  
+Disk Flags:  
 
----5) Выходим из parted. Команда quit.---
+Number	Start	End	Size	Туре	File system	Flags  
+		1049kB	2143MB	2142MB	primary	ext4	lba  
+```  
+---5) Выходим из parted. Команда quit---  
 
----------Проверим lsblk---------
+---Проверим lsblk---  
 
-```lsblk /dev/md0```
+```lsblk /dev/md0```  
 
----Теперь создадим файловую систему, по заданию требуется ext4, создаём её следующей командой---
-```mkfs.ext4 /dev/md0p1```
+---Теперь создадим файловую систему, по заданию требуется ext4, создаём её следующей командой---  
+```mkfs.ext4 /dev/md0p1```  
 
----------Настроим автоматическое монтирование в /raid5---------
+---Настроим автоматическое монтирование в /raid5---  
 
-```Создаём каталог /raid5:```
-```mkdir /raid5```
+---Создаём каталог /raid5:---  
+```mkdir /raid5```  
 
----------Обеспечим автоматическое монтирование в папку /raid5---------
+---Обеспечим автоматическое монтирование в папку /raid5. Для этого добавим в конец файла /etc/fstab:---
+```/dev/md0p1 /raid5 ext4 defaults 0 0```  
 
-```Для этого добавим в конец файла /etc/fstab:```
-```/dev/md0p1 /raid5 ext4 defaults 0 0```
+---Выполним команду монтирования---  
 
----------Выполним команду монтирования---------
+```mount -a```  
 
-```mount -a```
+---Посмотрим точки монтирования командой df---  
 
-```Посмотрим точки монтирования командой df```
+---------Настройте сервер сетевой файловой системы(nfs)---------  
 
----------Настройте сервер сетевой файловой системы(nfs)---------
+---Создадим файловые ресурсы и настроим права к ним---  
 
----------Создадим файловые ресурсы и настроим права к ним---------
+```mkdir /raid5/nfs```  
+```chmod 777 /raid5/nfs```  
 
-```mkdir /raid5/nfs```
-```chmod 777 /raid5/nfs```
+---Установим необходимое ПО---  
 
----------Установим необходимое ПО---------
+```apt-get install nfs-server```  
 
-```apt-get install nfs-server```
+---запустим сервер NFS---  
+  
+```systemctl enable --now nfs-server```  
+  
+---пропишем доступ к каталогу в файле /etc/exports---  
 
----------запустим сервер NFS---------
-
-```systemctl enable --now nfs-server```
-
----------пропишем доступ к каталогу в файле /etc/exports---------
-
-```vim /etc/exports```
-
-```##########```
-```/raid5/nfs 192.168.2.0/28(rw,no_subtree_check)```
-```##########```
-
-```Применим наши настройки```
-
-```exportfs -vra```
-
----------Ansible на сервере BR-SRV---------
-
----------Предварительные настройки---------
-
-```Включаем SSH на HQ-CLI```
-
-```systemctl enable --now sshd.service```
-
----------Создаем ключевую пару на BR-SRV---------
-
+```vim /etc/exports```  
+  
+```  
+##########  
+/raid5/nfs 192.168.2.0/28(rw,no_subtree_check)  
+##########  
+```  
+  
+---Применим наши настройки---  
+  
+```exportfs -vra```  
+  
+---------Ansible на сервере BR-SRV---------  
+  
+---Предварительные настройки---  
+  
+---Включаем SSH на HQ-CLI---  
+  
+```systemctl enable --now sshd.service```  
+  
+---Создаем ключевую пару на BR-SRV---  
+  
 ```ssh-keygen```
+  
+---Настраиваем бесключевой доступ на HQ-SRV и HQ-CLI---  
+  
+```ssh-copy-id user@192.168.1.10```  
+```ssh-copy-id user@192.168.2.10```  
+  
+---Устанавливаем ansible---  
+```apt-get install ansible```  
 
----------Настраиваем бесключевой доступ на HQ-SRV и HQ-CLI---------
+---редактируем конфиг---  
+```vim /etc/ansible/ansible.cfg```  
 
-```ssh-copy-id user@192.168.1.10```
-```ssh-copy-id user@192.168.2.10```
+```
+~~~  
+[defaults]  
+  
+# some basic default values...  
+  
+###############  
+inventory = /etc/ansible/hosts  
+interpreter_python = auto_silent  
+###############  
+  
+#library	= /usr/share/my_modules/  
+~~~  
+```  
 
-```Устанавливаем ansible:```
-```apt-get install ansible```
+---Создаем инвентарный файл---  
 
-```редактируем конфиг:```
-```vim /etc/ansible/ansible.cfg```
-
-```[defaults]```
-
-```inventory = /etc/ansible/hosts```
-```interpreter_python = auto_silent```
-
----------Создаем инвентарный файл:---------
-
-```vim /etc/ansible/hosts```
-
+```vim /etc/ansible/hosts```  
+  
+```
 ```[Linux]```
 ```hq-srv ansible_host=user@192.168.1.10```
 ```hq-cli ansible_host=user@192.168.2.10```
