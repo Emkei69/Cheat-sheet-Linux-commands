@@ -1,7 +1,50 @@
+========== Network provider==========  
   
+---------Server Setup to Change Time to Other Network Provider---------  
+  
+---Customize the time to a different---  
+  
+```apt-get update && apt-get install chrony nginx``.  
+  
+---Make changes to /etc/chrony.conf---  
+```vim /etc/chrony.conf```  
+  
+```  
+~~~  
+######  
+server ntp1.vniiftri.ru I'm
+run local level 5
+Allow everything.    
+######  
+#Record the speed at which the system.... <--- (To limit the desired speed)  
+~~~  
+```  
+  
+---Where---  
+| Configuration | Description |
+|----------------------------------|-------------------------------|
+| ```server ntp1.vniiftri.ru iburst``` | local change server |
+| ```local layer 5``` | local strat | local strat |
+| “Allow all” | change for all terms |
+
+  
+---Turn on chronicle and set it to autoload---.  
+``-systemctl enable---now chronid''.  
+  
+---It may be necessary to install chronid, and write an article in chronid.conf--- ``-  
+```On the master server, master client:``  
+```Server 172.16.4.1 loaded```  
+  
+```on branch router, branch server:``  
+```Server 172.16.5.1 is loaded```  
+    
+---------Install the nginx web server as a shared browser-server---------  
+
+Translated with DeepL.com (free version)
+
 ---Configure Nginx sharing---.  
 
-``apt-get install nginx''.  
+```apt-get install nginx''.  
   
 ---Create a new proxy configuration file---  
 ``/etc/nginx/sites-available.d/proxy.conf``.  
@@ -33,12 +76,12 @@ proxy_set_header X-Redirected-To $remote_addr;
 ```  
   
 ---Include information by us (proxy.conf), possibly links---.  
-`` ``ln /etc/nginx/sites-available.d/proxy.conf /etc/nginx/sites-enabled.d/proxy.conf``  
-`ls -la /etc/nginx/sites-enabled``.  
+``` ```ln /etc/nginx/sites-available.d/proxy.conf /etc/nginx/sites-enabled.d/proxy.conf```  
+```ls -la /etc/nginx/sites-enabled``.  
   
 ---Check the configuration for errors---  
   
-``nginx -t``  
+```nginx -t```  
 
 ---Now connect the nginx service---  
 
@@ -52,9 +95,9 @@ proxy_set_header X-Redirected-To $remote_addr;
   
 ---thank you /etc/samba/smb.conf FOR WHAT YOU ARE!!!---  
   
-``apt-get update && apt-get install-samba-dc -y`` ``  
+```apt-get update && apt-get install-samba-dc -y``` ```  
   
-``rm -f /etc/samba/smb.conf``  
+```rm -f /etc/samba/smb.conf```  
   
 ---Start the installation---  
   
@@ -64,35 +107,35 @@ Translated with DeepL.com (free version)
 
 ---------Performing an availability check---------
 
-``ansible all -m ping""
+```ansible all -m ping""
 
 ---------Creating applications in Docker on a branch server---------
 
 ---------Install the docker engine and docker-compose---------
 
-`apt-get installs the docker engine docker-compose -y`
+```apt-get installs the docker engine docker-compose -y```
 
 ---------enabling the docker service---------
 
-`enable systemctl -now docker`
+```enable systemctl -now docker```
 
 ---------we provide an opportunity to combine users into a docker group so that it can work with containers---------
 
-`usermod sshuser -aG configuration tool`
-`grep /etc/group configuration tool'
+```usermod sshuser -aG configuration tool```
+```grep /etc/group configuration tool'
 
 ---------We go into the context of the sshuser user---------
 
-``su -l sshuser``
+```su -l sshuser```
 
 ---------Upload images with the following command---------
 
-`docker extracts mediawiki`
-`docker extracts mariadb`
+```docker extracts mediawiki```
+```docker extracts mariadb```
 
 ---------Creating a wiki.yml for the MediaWiki application in the user's home directory.---------
 
-``vim wiki.yml``  
+```vim wiki.yml```  
 
 ~~~  
 ```  
@@ -125,15 +168,15 @@ dB:
 
 ---------Checking the configuration---------
 
-`configuration of docker-compose -f wiki.yml`
+```configuration of docker-compose -f wiki.yml```
 
 ---after checking, we launch---
 
-``docker-compose -f wiki.yml up -d``
+```docker-compose -f wiki.yml up -d```
 
 ![image](https://github.com/user-attachments/assets/7139c3c2-ba46-4a0c-8240-adf657168f79 )
 
----------!We go to the main client, we look at him `http://192.168.3.10:8080 `---------  
+---------!We go to the main client, we look at him ```http://192.168.3.10:8080 `---------  
 
 ![image](https://github.com/user-attachments/assets/b98a70d4-3f7d-4fe1-b3fb-0233c1f35e37 )  
 
@@ -142,101 +185,101 @@ Fill in the fields, Then
 ![image](https://github.com/user-attachments/assets/700808e9-6cba-4e79-82df-ce89a421feac )
 
 
-``scp LocalSettings.php sshuser@192.168.3.10:/home/sshuser/``  
+```scp LocalSettings.php sshuser@192.168.3.10:/home/sshuser/``  
 
-`the cat LocalSettings.php `  
+```the cat LocalSettings.php ```  
 
 ---------After that, we stop all containers---------  
 
-`stopping docker$(docker ps -a -q)``  
+```stopping docker$(docker ps -a -q)``  
 
 ---------delete all containers---------  
 
-`docker rm$(docker ps -a -q)`
+```docker rm$(docker ps -a -q)`
 
 ---------Commenting on the wiki.yml page---------  
 
 ``` - 8080:80```  
-` volumes: [ ~/LocalSettings.php:/var/www/html/LocalSettings.php ]`  
+``` volumes: [ ~/LocalSettings.php:/var/www/html/LocalSettings.php ]`  
 
 --------- I just downloaded wiki.yml---------  
 
-``docker-compose -f wiki.yml up -d``  
-`On the main server, in the browser at http://192.168.3.10:8080 `  
+```docker-compose -f wiki.yml up -d```  
+```On the main server, in the browser at http://192.168.3.10:8080 ```  
 
 ![image](https://github.com/user-attachments/assets/c3403324-ee47-411e-b8c5-e0d552a59238 )
 
-`Wiki works`  
+```Wiki works```  
 
 ========== The main server==========  
 
 ---------Install moodle on the main server---------  
 ---We are installing a number of packages that we will need to work with---
 
-`apt-get the update && apt-Get the installation of apache2 php8.2 apache2-mod_php8.2 mariadb-Server php8.2-opcache php8.2-curl php8.2-gd php8.2-International php8.2-mysqli php8.2-xml php8.2-xmlrpc php8.2-ldap php8.2-zip php8.2-soap php8.2-mbstring php8.2-json php8.2-xml-reader php8.2-fileinfo php8.2-sodium`  
+```apt-get the update && apt-Get the installation of apache2 php8.2 apache2-mod_php8.2 mariadb-Server php8.2-opcache php8.2-curl php8.2-gd php8.2-International php8.2-mysqli php8.2-xml php8.2-xmlrpc php8.2-ldap php8.2-zip php8.2-soap php8.2-mbstring php8.2-json php8.2-xml-reader php8.2-fileinfo php8.2-sodium```  
 
 ---Connecting httpd2 and mysqld services---  
 
-`enable systemctl - now httpd2 mysqld`  
+```enable systemctl - now httpd2 mysqld```  
 
 ---Set up secure access to our future database using the command---  
 
-``mysql_secure_installation``  
+```mysql_secure_installation```  
 
 --- I'm sure you're right, I do the rest of the time.---  
 ---go to the DBMS to create and configure the database---  
 
-``mariadb -u root -p``  
+```mariadb -u root -p```  
 
-`MariaDB [(no)]> CREATE A moodledb DATABASE;`  
-`The request is OK, 1 line is affected (0.002 seconds)``  
+```MariaDB [(no)]> CREATE A moodledb DATABASE;`  
+```The request is OK, 1 line is affected (0.002 seconds)``  
 
-`MariaDB [(no)]> CREATE A CUSTOM moodle IDENTIFIED AS 'P@ssw0rd';"`  
-`Request K, 0 rows affected (0.004 seconds)``  
+```MariaDB [(no)]> CREATE A CUSTOM moodle IDENTIFIED AS 'P@ssw0rd';"`  
+```Request K, 0 rows affected (0.004 seconds)``  
 
-`MariaDB [(no)]> GRANTS moodle ALL PRIVILEGES ON moodledb.*;"`  
-`The query is OK, rows are affected (0.003 seconds)``  
+```MariaDB [(no)]> GRANTS moodle ALL PRIVILEGES ON moodledb.*;"`  
+```The query is OK, rows are affected (0.003 seconds)``  
 
-`MariaDB [(no)]> RESET PRIVILEGES;`  
-`The query is OK, 0 lines are affected (0.002 seconds)``  
+```MariaDB [(no)]> RESET PRIVILEGES;`  
+```The query is OK, 0 lines are affected (0.002 seconds)``  
 
-`MariaDB [(no)]>``  
+```MariaDB [(no)]>``  
 
 ---download MOODLE in the online version---  
 
-``curl -L https://tinyurl.com/2z2btyrz > /root/moodle.zip``  
+```curl -L https://tinyurl.com/2z2btyrz > /root/moodle.zip```  
 
 ---Configure it in /var/www/html/ for long-range navigation---  
 
-`unpack /root/moodle.zip -d /var/www/html``  
-``mv /var/www/html/moodle-4.5.0/* /var/www/html/``  
-``ls /var/www/html``  
+```unpack /root/moodle.zip -d /var/www/html```  
+```mv /var/www/html/moodle-4.5.0/* /var/www/html/``  
+```ls /var/www/html```  
 
 ---Create a new moodledata directory, where you can find data and use html and moodledata---  
 
-``mkdir /var/www/moodledata``  
-`launching apache2:apache2 /var/www/html`  
-`launch apache2:apache2 /var/www/moodledata`  
+```mkdir /var/www/moodledata```  
+```launching apache2:apache2 /var/www/html```  
+```launch apache2:apache2 /var/www/moodledata```  
 
 ---Note the value of the max_input_vars parameter in the php.ini file---  
 
-``vim /etc/php/8.2/apache2-mod_php/php.ini``  
+```vim /etc/php/8.2/apache2-mod_php/php.ini```  
 ```  
 ~~~  
-`How many GET/POST/COOKIE input variables can be accepted`  
-``; max_input_vars = 1000``  
+```How many GET/POST/COOKIE input variables can be accepted```  
+``; max_input_vars = 1000```  
 
 `; The maximum amount of memory that a script can occupy (128 MB)``  
-``; http://php.net/memory-limit``  
-`memory_limit = 128 MB`  
+``; http://php.net/memory-limit```  
+```memory_limit = 128 MB```  
 
 ```;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;```  
 `; Error handling and logging ;`  
 ```;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;```  
 
-`This directive informs PHP about what errors, warnings and notifications you would like to receive`  
-`actions must be taken to achieve this. The recommended way to set values for this is`  
-``/max_input_va``  
+```This directive informs PHP about what errors, warnings and notifications you would like to receive```  
+```actions must be taken to achieve this. The recommended way to set values for this is```  
+``/max_input_va```  
 ~~~
 ```  
 
@@ -244,15 +287,15 @@ Fill in the fields, Then
 
 ---We invite you to cooperate **apache**---  
 
-``rm -f /var/www/html/index.html``  
+```rm -f /var/www/html/index.html```  
 
 ---------Enabling the httpd2 service---------  
 
-`systemctl restarting httpd2`  
+```systemctl restarting httpd2```  
 
 ---Join the client and get acquainted with the mood---  
 
-``http://192.168.1.10/install.php``  
+```http://192.168.1.10/install.php```  
 
 ---Choosing MariaDB as a data base partner---  
 
@@ -286,7 +329,7 @@ Fill in the fields, Then
 ---We will use the role mechanism for simplicity and speed.---  
   
 ---Install the required module---  
-`apt-get installs the libnss role`  
+```apt-get installs the libnss role```  
   
 ---create a local hq_users group---  
 ```add the hq_users group```  
@@ -362,7 +405,7 @@ nfs-clients already has the latest version.
   
 ---Checking the availability of resources---  
   
-``showmount -e 192.168.3.10``  
+```showmount -e 192.168.3.10```  
 ```  
 Export list for 192.168.3.10:
 /srv/public *
@@ -371,16 +414,16 @@ Export list for 192.168.3.10:
   
 ---Creating a catalog---  
   
-``mkdir /mnt/nfs``  
-`mount -t nfs 192.168.3.10:/raid5/nfs/mnt/nfs`  
-``df /mnt/nfs``  
+```mkdir /mnt/nfs```  
+```mount -t nfs 192.168.3.10:/raid5/nfs/mnt/nfs```  
+```df /mnt/nfs```  
   
 ```  
 The file system size used, %, is set to  
 192.168.3.10:/raid5/nfs 2.0G 0 1.9G 0% /mnt/nfs  
 ```
 
-`umount -a`  
+```umount -a```  
 
 ```
 umount: /run/user/1080001104: the target object is busy.  
@@ -396,7 +439,7 @@ umount: /dev: The target object is busy.
   
 ```192.168.3.10:/raid5/nfs /mnt/nfs nfs intr,soft,_netdev 0  0```
   
-``
+```
 intr/nointr — turn off/on mounting operations by ctrl+C  
 soft — prevents hanging, in case of resource unavailability  
 _netdev — Initialization system management, mounting after network access  
