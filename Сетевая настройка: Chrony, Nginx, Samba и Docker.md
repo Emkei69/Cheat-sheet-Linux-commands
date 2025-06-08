@@ -491,24 +491,24 @@ volumes:
 ![image](https://github.com/user-attachments/assets/700808e9-6cba-4e79-82df-ce89a421feac)
 
 
-```scp LocalSettings.php sshuser@192.168.3.10:/home/sshuser/```
+```scp LocalSettings.php sshuser@192.168.3.10:/home/sshuser/```  
 
-```cat LocalSettings.php```
+```cat LocalSettings.php```  
 
----------После этого останавливаем все контейнеры---------
+---------После этого останавливаем все контейнеры---------  
 
-```docker stop $(docker ps -a -q)```
+```docker stop $(docker ps -a -q)```  
 
----------удаляем все контейнеры---------
+---------удаляем все контейнеры---------  
 
 ```docker rm $(docker ps -a -q)```
 
----------Раскомментируем строку wiki.yml---------
+---------Раскомментируем строку wiki.yml---------  
 
-``` - 8080:80```
-``` volumes: [ ~/LocalSettings.php:/var/www/html/LocalSettings.php ]```
+``` - 8080:80```  
+``` volumes: [ ~/LocalSettings.php:/var/www/html/LocalSettings.php ]```  
 
----------и снова запускаем wiki.yml---------
+---------и снова запускаем wiki.yml---------  
 
 ```docker-compose -f wiki.yml up -d```  
 ```На MainClient, в браузер по адресу http://192.168.3.10:8080```  
