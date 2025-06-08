@@ -1,3 +1,9 @@
+ISP → NetProvider
+HQ-RTR → MainRouter
+BR-RTR → BranchRouter
+HQ-SRV → MainServer
+BR-SRV → BranchServer
+HQ-CLI → MainClient
 ==========NetProvider==========  
   
 ---------Настройка сервера времени chrony на машине NetProvider---------  
