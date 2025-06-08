@@ -1,5 +1,8 @@
-# Navigation in the File System
+# File system navigation
 
-- List directory contents: `ls`
-- Change directory: `cd <path>`
-- Show current directory: `pwd`
+- List of directory contents: `ls`
+- Change the directory: `cd <path>`
+- Show the current directory: `pwd`
+- - Show hidden files: `ls -a`
+- Go to a higher level in the directory hierarchy: `cd..`
+- Go to the home directory: `cd~`
