@@ -482,7 +482,7 @@ volumes:
 
 ![image](https://github.com/user-attachments/assets/7139c3c2-ba46-4a0c-8240-adf657168f79)
 
----------!Переходим на MainClient, в браузер по адресу http://192.168.3.10:8080---------  
+---------!Переходим на MainClient, в браузер по адресу `http://192.168.3.10:8080`---------  
 
 ![image](https://github.com/user-attachments/assets/b98a70d4-3f7d-4fe1-b3fb-0233c1f35e37)  
 
