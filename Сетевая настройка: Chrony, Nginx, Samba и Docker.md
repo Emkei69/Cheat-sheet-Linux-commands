@@ -88,21 +88,19 @@ proxy_set_header X-Forwarded-For $remote_addr;
 ---------BranchServer ---------  
 
 ---------Настройка доменного контроллера Samba на машине BranchServer---------  
-
----SambaAD на Alt---  
-
+  
+---SambaAD на Alt---    
+  
 ---удаляем файл /etc/samba/smb.conf ДО НАЧАЛА УСТАНОВКИ!!!---  
-
+  
 ```apt-get update && apt-get install task-samba-dc -y```  
-
-
-
+  
 ```rm -f /etc/samba/smb.conf```  
-
+  
 ---Начинаем установку---  
-
+  
 ```samba-tool domain provision -–interactive```  
-
+  
 ```   
 Realm [AU-TeAM.IrPO] :  
 Server Role (dc, member, standalone) [dc] :  
@@ -111,13 +109,13 @@ DNS forwarder IP address (write 'none' to disable forwarding) [192.168.1.10] :
 Administrator password:  
 Retype password:  
 ```  
-
+  
 ---! В качестве пароля указываем P@ssw0rd---  
-
+  
 ---Запускаем сервис---  
-
+  
 ```systemctl enable --now samba.service```  
-
+  
 ```  
 Synchronizing state of samba.service with SysV service script with /lib/sys  
 Executing: /lib/systemd/systemd-sysv-install enable samba  
