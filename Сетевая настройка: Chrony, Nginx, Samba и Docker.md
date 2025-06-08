@@ -743,7 +743,7 @@ umount: /dev: targt is busy.
   
 ---Добавляем следующую строку в конец файла /etc/fstab---  
   
----192.168.3.10:/raid5/nfs /mnt/nfs nfs intr,soft,_netdev 0  0---  
+```192.168.3.10:/raid5/nfs /mnt/nfs nfs intr,soft,_netdev 0  0```
   
 ```  
 intr/nointr — отк/вкл операции монтирования по ctrl+C  
