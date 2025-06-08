@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/04f58282-d9c4-473e-8326-666db5db1bb6)![image](https://github.com/user-attachments/assets/79b5c700-e9d6-41f3-abc3-f4709c85875e)==========NetProvider==========  
+==========NetProvider==========  
   
 ---------Настройка сервера времени chrony на машине NetProvider---------  
   
