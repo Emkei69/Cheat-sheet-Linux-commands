@@ -156,7 +156,7 @@ search au-team.irpo
 ```samba-tool user add user4.hq P@ssw0rd```  
 ```samba-tool user add user5.hq P@ssw0rd```  
 
----Добавляем пользователей в группу---
+---Добавляем пользователей в группу---  
 ```samba-tool group addmembers hq user1.hq,user2.hq,user3.hq,user4.hq,user5.hq```  
 
 ---проверим---  
