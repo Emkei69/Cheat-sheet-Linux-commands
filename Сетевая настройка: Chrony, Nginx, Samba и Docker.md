@@ -608,8 +608,6 @@ volumes:
 
 ---Просматриваем всё ли в статус **“OK”** или “Проверка” и прожимаем **“Продолжить”**---  
 
-![image](https://github.com/user-attachments/assets/5850728e-53fd-483f-bca1-4a8776d91c8e)
-
 ---Заполняем обязательные поля для создания основного администратора---  
 
 ![image](https://github.com/user-attachments/assets/9c6f2f25-0893-400a-a11d-dffaaa19ff85)
