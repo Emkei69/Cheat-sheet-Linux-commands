@@ -200,7 +200,7 @@ logonCount: 20250111103606.0z
 
 ---Выполните импорт пользователей из файла users.csv---  
 
-```Создаём файл import.sh```  
+---Создаём файл import.sh---  
 
 ~~~  
 ```  
@@ -720,7 +720,7 @@ Export list for 192.168.3.10:
   
 ---Создаем каталог---  
   
-```mkdir / mnt/nfs```  
+```mkdir /mnt/nfs```  
 ```mount -t nfs 192.168.3.10:/raid5/nfs /mnt/nfs```  
 ```df /mnt/nfs```  
   
