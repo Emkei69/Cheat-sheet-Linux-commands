@@ -1,3 +1,4 @@
+==========Временное обозначение==========
 ISP → NetProvider  
 HQ-RTR → MainRouter  
 BR-RTR → BranchRouter  
